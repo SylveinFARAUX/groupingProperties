@@ -14,6 +14,8 @@
 
 #include "framework.h"
 
+typedef std::list<std::string> Properties;
+typedef std::map<std::string, Properties > Group;
 
 namespace grouping
 {
@@ -22,5 +24,10 @@ namespace grouping
 	public:
 		GroupingTools();
 		static void run();
+
+		static void to_prune(std::map<std::string, Properties > source, std::map<std::string, Properties > * pruned_tree, std::list<std::pair<std::string, int> >* pscore);
+		static bool pair_verification(std::map<std::string, Properties > * pruned_tree, std::string p1, std::string p2);
+		static Group grouping(std::map<std::string, Properties > source);
+		static void ask_for_grouping(Group* g, std::string p);
 	};
 }
