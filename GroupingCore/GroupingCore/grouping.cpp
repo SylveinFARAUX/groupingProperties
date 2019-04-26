@@ -28,7 +28,10 @@ namespace grouping
 
 
 		cout << "Recherche des groupes : " << endl;
-		grouping(source);
+		Group groups = grouping(source);
+
+		cout << "Les groupes sont : " << endl;
+		show_groups(&groups);
 	}
 
 	void GroupingTools::to_prune(map<string, Properties > source, map<string, Properties > * pruned_tree, list<pair<string, int> > * pscore)
@@ -166,33 +169,10 @@ namespace grouping
 					{
 						cout << p1 << " et " << p2 << " peuvent être groupées" << endl;
 
-						grouped = false;
+						grouped = true;
 						Group::iterator group_it;
-						for (group_it = result.begin(); group_it != result.end(); group_it++)
-						{
-							Properties group_properties = result.at(group_it->first);
-							bool contains_p1 = (find(group_properties.begin(), group_properties.end(), p1) != group_properties.end());
-							bool contains_p2 = (find(group_properties.begin(), group_properties.end(), p2) != group_properties.end());
 
-							if (contains_p1 && contains_p2)
-								grouped = true;
-							else if (contains_p1 && !contains_p2)
-							{
-								cout << "Le groupe " << group_it->first << " s'est vu rajouté la propriété " << p2 << endl;
-								result.at(group_it->first).push_back(p2);
-								grouped = true;
-							}
-							else if (!contains_p1 && contains_p2)
-							{
-								cout << "Le groupe " << group_it->first << " s'est vu rajouté la propriété " << p1 << endl;
-								result.at(group_it->first).push_back(p1);
-								grouped = true;
-							}
-
-							if (grouped)
-								group_it = next(result.end(), -1);
-						}
-						if (!grouped)
+						if (!is_p_grouped(&result, p1))
 						{
 							string group_name = p1 + "_group";
 							cout << "Création du groupe " << group_name << " contenant " << p1 << " et " << p2 << endl;
@@ -200,12 +180,20 @@ namespace grouping
 							result[group_name].push_back(p1);
 							result[group_name].push_back(p2);
 						}
+						else
+						{
+							string p1_group_name = get_group_name(&result, p1);
+							string p2_group_name = get_group_name(&result, p2);
+
+							if (p1_group_name.compare(p2_group_name) != 0)
+							{
+								cout << "Le groupe " << p1_group_name << " s'est vu rajouté la propriété " << p2 << endl;
+								result[p1_group_name].push_back(p2);
+							}
+						}
 					}
 					else
-					{
 						ask_for_grouping(&result, p1);
-						ask_for_grouping(&result, p2);
-					}
 				}
 				if (!grouped)
 					ask_for_grouping(&result, p1);
@@ -217,24 +205,58 @@ namespace grouping
 
 	void GroupingTools::ask_for_grouping(Group * g, string p)
 	{
-		Group::iterator group_it;
+		if (!is_p_grouped(g, p))
+		{
+			string group_name = p + "_group";
+			cout << "Création du groupe " << group_name << " contenant " << p << endl;
+			Properties plist;
+			plist.push_back(p);
+			g->insert(pair<string, Properties>(group_name,plist));
+		}
+	}
 
-		//p1 registration
-		bool contains_p = false;
+	bool GroupingTools::is_p_grouped(Group* g, string p)
+	{
+		Group::iterator group_it;
 		for (group_it = g->begin(); group_it != g->end(); group_it++)
 		{
 			Properties group_properties = group_it->second;
 			if (find(group_properties.begin(), group_properties.end(), p) != group_properties.end())
+				return true;
+		}
+		return false;
+	}
+
+	string GroupingTools::get_group_name(Group * g, string prop)
+	{
+		Group::iterator group_it;
+		for (group_it = g->begin(); group_it != g->end(); group_it++)
+		{
+			Properties group_properties = g->at(group_it->first);
+			if (find(group_properties.begin(), group_properties.end(), prop) != group_properties.end())
+				return group_it->first;
+		}
+		return "";
+	}
+
+	void GroupingTools::show_groups(Group* g)
+	{
+		Group::iterator group_it;
+		int gr_nb = 0;
+		int p_nb = 0;
+		for (group_it = g->begin(); group_it != g->end(); group_it++)
+		{
+			cout << "<" << group_it->first << ">" << endl;
+			gr_nb++;
+
+			Properties group_properties = g->at(group_it->first);
+			Properties::iterator p_it;
+			for (p_it = group_properties.begin(); p_it != group_properties.end(); p_it++)
 			{
-				contains_p = true;
-				group_it = next(g->end(), -1);
+				p_nb++;
+				cout << "  -> " << *p_it << endl;
 			}
 		}
-		if (!contains_p)
-		{
-			string group_name = p + "_group";
-			cout << "Création du groupe " << group_name << " contenant " << p << endl;
-			g->at(group_name).push_back(p);
-		}
+		cout << gr_nb << " ont été créés, regroupant au total " << p_nb << " propriétés" << endl;
 	}
 }
