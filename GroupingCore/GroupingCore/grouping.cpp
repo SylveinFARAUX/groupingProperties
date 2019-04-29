@@ -3,8 +3,10 @@
 #include "grouping.h"
 #include <iostream>
 
-using namespace std;
+#include "CSVTools.h"
 
+using namespace std;
+ 
 namespace grouping
 {
 	GroupingTools::GroupingTools() {}
@@ -26,12 +28,20 @@ namespace grouping
 		source["node5"] = P5;
 		source["node6"] = P6;
 
+		list<grouping::Node> lno = FileTools::CSVTools::read_file("C:\\Users\\PROPRIETAIRE\\Documents\\Workspace\\groupingProperties\\GroupingCore\\entree.csv", 0, 1);
 
-		cout << "Recherche des groupes : " << endl;
-		Group groups = grouping(source);
+		cout << "L'arbre est : " << endl;
 
-		cout << "Les groupes sont : " << endl;
-		show_groups(&groups);
+		list<grouping::Node>::iterator it;
+		for (it = lno.begin() ; it != lno.end(); it++)
+		{
+			cout << "<" << it->name << ">" << endl;
+
+			Properties::iterator p_it;
+			for (p_it = it->properties.begin(); p_it != it->properties.end(); p_it++)
+				cout << " -> " << *p_it << endl;
+			cout << endl;
+		}
 	}
 
 	void GroupingTools::to_prune(map<string, Properties > source, map<string, Properties > * pruned_tree, list<pair<string, int> > * pscore)

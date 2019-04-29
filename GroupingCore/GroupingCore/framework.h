@@ -8,3 +8,17 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
+
+namespace grouping
+{
+	typedef std::list<std::string> Properties;
+	typedef std::map<std::string, Properties > Group;
+
+	struct Node {
+		std::string name;
+		Properties properties;
+		Node(std::string n) {
+			name = n;
+		}
+	};
+}

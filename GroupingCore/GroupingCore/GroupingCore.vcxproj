@@ -19,11 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CSVTools.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="grouping.h" />
+    <ClInclude Include="StringTools.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSVTools.cpp" />
     <ClCompile Include="grouping.cpp" />
+    <ClCompile Include="StringTools.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

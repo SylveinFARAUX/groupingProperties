@@ -14,9 +14,6 @@
 
 #include "framework.h"
 
-typedef std::list<std::string> Properties;
-typedef std::map<std::string, Properties > Group;
-
 namespace grouping
 {
 	class GROUPINGCORE_API GroupingTools
