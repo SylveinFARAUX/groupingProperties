@@ -21,11 +21,12 @@ namespace grouping
 	public:
 		GroupingTools();
 		static void run();
-		static Group grouping(std::map<std::string, Properties > source);
+		static Group grouping(std::list<Node> source_nodes);
 
 	private:
 		static void to_prune(std::map<std::string, Properties > source, std::map<std::string, Properties >* pruned_tree, std::list<std::pair<std::string, int> >* pscore);
 		static bool pair_verification(std::map<std::string, Properties >* pruned_tree, std::string p1, std::string p2);
+		static std::map<std::string, Properties > nodes2map(std::list<Node> source);
 
 		static bool is_p_grouped(Group* g, std::string p);
 		static void ask_for_grouping(Group* g, std::string p);

@@ -3,10 +3,12 @@
 
 using namespace std;
 
+std::string FileManager::dir = "";
+std::string FileManager::output_fileName = "";
+
 namespace FileTools
 {
-	string CSVTools::dir = "";
-	string CSVTools::output_fileName = "";
+
 
 	list<grouping::Node> CSVTools::read_file(string path, int node_column, int property_column, bool case_sensitive)
 	{
@@ -15,7 +17,7 @@ namespace FileTools
 		char _dir[2048] = { 0 }; // stockera le fullpath renvoyée par la fonction _fullpath()
 		ifstream fichier(path.c_str(), ios::in);  // on ouvre le fichier en lecture
 
-		if (!fichier)  // si l'ouverture a réussi
+		if (!fichier)
 		{
 			cout << "Impossible d'ouvrir le fichier " << path << endl;
 			return nodes;
@@ -24,7 +26,7 @@ namespace FileTools
 		string ligne;
 
 		//récupère le chemin complet de l'exécutable
-		dir = _fullpath(_dir, __FILE__, 2048);
+		FileManager::dir = _fullpath(_dir, __FILE__, 2048);
 
 		//ne garder que le chemin du répertoire courant
 		size_t pos = dir.find_last_of("\\/");
@@ -35,8 +37,8 @@ namespace FileTools
 		input_fileName = (string::npos == pos) ? "" : path.substr(pos + 1, path.length() - 1);
 
 		pos = input_fileName.find_last_of(".");
-		output_fileName = (string::npos == pos) ? "" : input_fileName.substr(0, pos) + "_output";
-		output_fileName += input_fileName.substr(pos, input_fileName.length() - 1);
+		FileManager::output_fileName = (string::npos == pos) ? "" : input_fileName.substr(0, pos) + "_output";
+		FileManager::output_fileName += input_fileName.substr(pos, input_fileName.length() - 1);
 
 		
 		getline(fichier, ligne);  // on met dans "contenu" la ligne
@@ -54,7 +56,10 @@ namespace FileTools
 			}
 
 			if (l[property_column].length() > 0)
-				nodes.back().properties.push_back(l[property_column]);
+				if (case_sensitive)
+					nodes.back().properties.push_back(l[property_column]);
+				else
+					nodes.back().properties.push_back(StringTools::toLower(l[property_column]));
 		}
 
 		fichier.close();  // on ferme le fichier

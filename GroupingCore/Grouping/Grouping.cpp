@@ -2,12 +2,15 @@
 //
 
 #include <iostream>
-#include "grouping.h"
+
+
 
 int main()
 {
     std::cout << "Hello World!\n"; 
-	grouping::GroupingTools::run();
+	
+
+	//grouping::GroupingTools::run();
 
 }
 

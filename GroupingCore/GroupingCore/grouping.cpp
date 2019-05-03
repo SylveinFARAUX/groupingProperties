@@ -12,23 +12,9 @@ namespace grouping
 	GroupingTools::GroupingTools() {}
 
 	void GroupingTools::run() {
-		map<string, Properties > source;
+		SetConsoleOutputCP(65001);
 
-		Properties P1 = { "p1", "p2", "p3", "p4", "p5" };
-		Properties P2 = { "p10", "p2", "p30", "p40", "p5" };
-		Properties P3 = { "p17", "p20", "p30", "p49", "p58" };
-		Properties P4 = { "p5", "p2", "p39", "p40", "p1" };
-		Properties P5 = { "p189", "p20", "p30", "p409", "p59" };
-		Properties P6 = { "p122", "p29", "p355", "p410", "p590" };
-
-		source["node1"] = P1;
-		source["node2"] = P2;
-		source["node3"] = P3;
-		source["node4"] = P4;
-		source["node5"] = P5;
-		source["node6"] = P6;
-
-		list<grouping::Node> lno = FileTools::CSVTools::read_file("C:\\Users\\PROPRIETAIRE\\Documents\\Workspace\\groupingProperties\\GroupingCore\\entree.csv", 0, 1);
+		list<grouping::Node> lno = FileTools::CSVTools().read_file("C:\\Users\\sylveinfaraux\\Documents\\personnel\\workspace\\groupingProperties\\GroupingCore\\entree.csv", 0, 1);
 
 		cout << "L'arbre est : " << endl;
 
@@ -42,6 +28,8 @@ namespace grouping
 				cout << " -> " << *p_it << endl;
 			cout << endl;
 		}
+
+		show_groups(&grouping(lno));
 	}
 
 	void GroupingTools::to_prune(map<string, Properties > source, map<string, Properties > * pruned_tree, list<pair<string, int> > * pscore)
@@ -114,7 +102,7 @@ namespace grouping
 		return true;
 	}
 
-	Group GroupingTools::grouping(map<string, Properties > source)
+	Group GroupingTools::grouping(list<Node> source_nodes)
 	{
 		map<string, Properties > pruned_tree;
 		list<pair<string, int> > pscore; //contains the properties score
@@ -124,6 +112,7 @@ namespace grouping
 		bool grouped;
 
 		//data preparation
+		map<string, Properties > source = nodes2map(source_nodes);
 		cout << "Elaguage de l'arbre d'entrée" << endl;
 		to_prune(source, &pruned_tree, &pscore);
 
@@ -268,5 +257,17 @@ namespace grouping
 			}
 		}
 		cout << gr_nb << " ont été créés, regroupant au total " << p_nb << " propriétés" << endl;
+	}
+
+	map<string, Properties > GroupingTools::nodes2map(list<Node> source)
+	{
+		list<Node>::iterator node_it;
+		map<string, Properties > result;
+
+		for (node_it = source.begin(); node_it != source.end(); node_it++)
+			for (Properties::iterator p_it = node_it->properties.begin(); p_it != node_it->properties.end(); p_it++)
+				result[node_it->name].push_back(*p_it);
+
+		return result;
 	}
 }
