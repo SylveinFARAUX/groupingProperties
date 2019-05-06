@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-
+#include <GroupingCore/grouping.h>
 
 
 int main()
@@ -10,7 +10,7 @@ int main()
     std::cout << "Hello World!\n"; 
 	
 
-	//grouping::GroupingTools::run();
+	grouping::GroupingTools::run();
 
 }
 

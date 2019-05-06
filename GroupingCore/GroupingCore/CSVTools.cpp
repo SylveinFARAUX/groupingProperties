@@ -3,12 +3,11 @@
 
 using namespace std;
 
-std::string FileManager::dir = "";
-std::string FileManager::output_fileName = "";
-
 namespace FileTools
 {
-
+	std::string FileManager::dir = "";
+	std::string FileManager::output_fileName = "";
+	const char* FileManager::EXTENSION[] = { "csv", "xlsx" };
 
 	list<grouping::Node> CSVTools::read_file(string path, int node_column, int property_column, bool case_sensitive)
 	{

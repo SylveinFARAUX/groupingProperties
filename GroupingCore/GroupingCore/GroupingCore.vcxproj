@@ -90,7 +90,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)lib\</OutDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\lib</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -98,7 +98,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)lib\</OutDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\lib</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -137,14 +137,19 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile />
+      <AdditionalIncludeDirectories>$(SolutionDir)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(SolutionDir)include\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xlnt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)bin\"</Command>
+      <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)include\lib\"
+XCOPY /Y /R "$(TargetDir)*.lib" "$(SolutionDir)include\lib\"
+XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -190,6 +195,7 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile />
+      <AdditionalIncludeDirectories>$(SolutionDir)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -197,9 +203,13 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(SolutionDir)include\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xlnt.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)bin\"</Command>
+      <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)include\lib\"
+XCOPY /Y /R "$(TargetDir)*.lib" "$(SolutionDir)include\lib\"
+XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

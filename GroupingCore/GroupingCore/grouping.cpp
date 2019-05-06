@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "CSVTools.h"
+#include "XLSXTools.h"
 
 using namespace std;
  
@@ -14,7 +15,16 @@ namespace grouping
 	void GroupingTools::run() {
 		SetConsoleOutputCP(65001);
 
-		list<grouping::Node> lno = FileTools::CSVTools().read_file("C:\\Users\\sylveinfaraux\\Documents\\personnel\\workspace\\groupingProperties\\GroupingCore\\entree.csv", 0, 1);
+		FileTools::FileManager *file_manager;
+
+		string ext = "xlsx";
+
+		if (ext.compare(FileTools::FileManager::EXTENSION[FileTools::CSV]) == 0)
+			file_manager = new FileTools::CSVTools();
+		else
+			file_manager = new FileTools::XLSXTools();
+		
+		list<grouping::Node> lno = file_manager ->read_file("C:\\Users\\PROPRIETAIRE\\Documents\\workspace\\groupingProperties\\GroupingCore\\entree.xslx", 0, 1);
 
 		cout << "L'arbre est : " << endl;
 
@@ -29,7 +39,7 @@ namespace grouping
 			cout << endl;
 		}
 
-		show_groups(&grouping(lno));
+		//show_groups(&grouping(lno));//*/
 	}
 
 	void GroupingTools::to_prune(map<string, Properties > source, map<string, Properties > * pruned_tree, list<pair<string, int> > * pscore)

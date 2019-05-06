@@ -1,12 +1,14 @@
 #pragma once
 
 #include "FileManager.h"
+#include <fstream>
+#include <iostream>
 
-#pragma comment(lib, "xlnt.lib")
+//#pragma comment(lib, "xlnt.lib")
 
 namespace FileTools
 {
-	class XLSXTools
+	class XLSXTools : public FileManager
 	{
 	public:
 		XLSXTools() {};
