@@ -9,6 +9,12 @@
 #include <algorithm>
 #include <iterator>
 
+#ifdef GROUPINGCORE_EXPORTS
+#define GROUPINGCORE_API __declspec(dllexport)
+#else
+#define GROUPINGCORE_API __declspec(dllimport)
+#endif
+
 namespace grouping
 {
 	typedef std::list<std::string> Properties;

@@ -6,7 +6,7 @@ namespace FileTools
 {
 	enum {CSV = 0, XLSX = 1};
 
-	class FileManager
+	class GROUPINGCORE_API FileManager
 	{
 	public:
 		FileManager() {};
@@ -17,5 +17,10 @@ namespace FileTools
 		static std::string dir;
 		static std::string output_fileName;
 		static const char* EXTENSION[];
+
+		static std::string getFilename(std::string fullpath) {
+			size_t pos = fullpath.find_last_of("\\/");
+			return (std::string::npos == pos) ? "" : fullpath.substr(pos + 1, fullpath.length() - 1);
+		}
 	};
 }

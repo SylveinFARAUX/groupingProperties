@@ -28,9 +28,9 @@ namespace FileTools
 		FileManager::dir = _fullpath(_dir, __FILE__, 2048);
 
 		//ne garder que le chemin du répertoire courant
-		size_t pos = dir.find_last_of("\\/");
-		dir = (string::npos == pos) ? "" : dir.substr(0, pos);
-		dir += "\\";
+		size_t pos = FileManager::dir.find_last_of("\\/");
+		FileManager::dir = (string::npos == pos) ? "" : FileManager::dir.substr(0, pos);
+		FileManager::dir += "\\";
 
 		pos = path.find_last_of("\\/");
 		input_fileName = (string::npos == pos) ? "" : path.substr(pos + 1, path.length() - 1);

@@ -1,14 +1,21 @@
 #pragma once
 
+#ifdef GROUPINGCORE_EXPORTS
+#define GROUPINGCORE_API __declspec(dllexport)
+#else
+#define GROUPINGCORE_API __declspec(dllimport)
+#endif
+
 #include "FileManager.h"
 #include <fstream>
 #include <iostream>
+#include <conio.h>
+#include <libXL/libxl.h>
 
-//#pragma comment(lib, "xlnt.lib")
 
 namespace FileTools
 {
-	class XLSXTools : public FileManager
+	class GROUPINGCORE_API XLSXTools : public FileManager
 	{
 	public:
 		XLSXTools() {};

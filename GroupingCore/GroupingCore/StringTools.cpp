@@ -43,3 +43,18 @@ string StringTools::toUpper(string str){
 	std::transform(upperStr.begin(), upperStr.end(), upperStr.begin(), ::toupper);
 	return upperStr;
 }
+
+wchar_t* StringTools::string2wchar(string str)
+{
+	wchar_t* wide_string = new wchar_t[str.length() + 1];
+	std::copy(str.begin(), str.end(), wide_string);
+	wide_string[str.length()] = 0;
+
+	return wide_string;
+}
+
+string StringTools::wchar2string(const wchar_t* wide_string)
+{
+	wstring ws(wide_string);
+	return string(ws.begin(), ws.end());
+}

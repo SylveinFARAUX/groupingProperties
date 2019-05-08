@@ -7,7 +7,7 @@
 
 namespace FileTools
 {
-	class CSVTools : public FileManager
+	class GROUPINGCORE_API CSVTools : public FileManager
 	{
 	public:
 		CSVTools() {}

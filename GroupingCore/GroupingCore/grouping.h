@@ -6,12 +6,6 @@
 
 #pragma once
 
-#ifdef GROUPINGCORE_EXPORTS
-#define GROUPINGCORE_API __declspec(dllexport)
-#else
-#define GROUPINGCORE_API __declspec(dllimport)
-#endif
-
 #include "framework.h"
 
 namespace grouping
