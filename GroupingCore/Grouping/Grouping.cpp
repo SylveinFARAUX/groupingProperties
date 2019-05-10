@@ -15,28 +15,28 @@
 
 using namespace std;
 
-int main()
+string file;
+FileTools::FileManager* file_manager;
+
+void set_file(string fullpath){
+	file = fullpath;
+}
+
+void process_grouping(int node_column, int property_column)
 {
-	FileTools::FileManager* file_manager;
-
-	 /* DATA DEMO */
-	string file = "C:\\Users\\sylveinfaraux\\Documents\\personnel\\workspace\\groupingProperties\\GroupingCore\\entree.xlsx";
-	int node_column = 0;
-	int property_column = 1;
-
 	string filename = FileTools::FileManager::getFilename(file);
 	vector <string> filename_array;
 	StringTools::split(filename, '.', filename_array);
 	string extension = filename_array[1];
 
-	/*if (extension.compare(FileTools::FileManager::EXTENSION[FileTools::CSV]) == 0)
+	if (extension.compare(FileTools::FileManager::EXTENSION[FileTools::CSV]) == 0)
 		file_manager = new FileTools::CSVTools();
 	else
 		file_manager = new FileTools::XLSXTools();
 
 	list<grouping::Node> lno = file_manager->read_file(file, node_column, property_column);
 
-	cout << "L'arbre est : " << endl;
+	/*cout << "L'arbre est : " << endl;
 
 	list<grouping::Node>::iterator it;
 	for (it = lno.begin(); it != lno.end(); it++)
@@ -48,10 +48,29 @@ int main()
 		for (p_it = it->properties.begin(); p_it != it->properties.end(); p_it++)
 			cout << " -> " << *p_it << endl;
 		cout << endl;
-	}
+	}*/
 
-	//show_groups(&grouping(lno));//*/
-	string jsonmsg = "{\"hello\": \"world\", \"t\" : true, \"f\" : false, \"n\" : null, \"i\" : 123, \"pi\" : 3.1416, \"a\" : [1, 2, 3, 4]}";
+	//process grouping
+
+	grouping::Group groups = grouping::GroupingTools::grouping(lno);
+	grouping::GroupingTools::show_groups(&groups);//*/
+	list<grouping::Node> result = grouping::GroupingTools::buildTreeWithGroups(&lno, &groups);
+
+	//save the results
+	file_manager->write_file(&result, &groups);
+}
+
+int main()
+{
+	
+
+	 /* CASE Process -> case grouping */
+	//set_file("C:\\Users\\sylveinfaraux\\Documents\\personnel\\workspace\\groupingProperties\\GroupingCore\\entree.xlsx");
+	set_file("C:\\Users\\sylveinfaraux\\Documents\\ServiceNow\\Training\\Catalog Item Variables.xlsx");
+	FileTools::FileManager::setColumnName("Entity", "Property");
+	process_grouping(1, 3);
+
+	/*string jsonmsg = "{\"hello\": \"world\", \"t\" : true, \"f\" : false, \"n\" : null, \"i\" : 123, \"pi\" : 3.1416, \"a\" : [1, 2, 3, 4]}";
 	
 	bool testBool;
 	
@@ -63,7 +82,7 @@ int main()
 	}
 
 	JSONTools::JSONConnectionCommand jsonConnect("WeTheBest");
-	cout << jsonConnect.toJSON() << endl;
+	cout << jsonConnect.toJSON() << endl;*/
 }
 
 // Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage

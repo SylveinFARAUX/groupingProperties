@@ -13,44 +13,34 @@ typedef std::pair<std::string, std::string> Information; //<name, description>
 class GROUPINGCORE_API ProcessException : public std::exception
 {
 public:
-	enum ERROR_LEVEL { INCIDENT, FATAL};
+	enum ERROR_LEVEL { INCIDENT, FATAL };
 	enum ERROR_TYPE
 	{
-		NON_EXISTENT,
-		UNEXPECTED_VALUE,
-		UNEXPECTED_MESSAGE,
-		UNDEFINED
+		UNDEFINED = 0,
+		NON_EXISTENT = 1,
+		UNEXPECTED_VALUE = 2,
+		UNEXPECTED_MESSAGE = 3,
+		FILE_OPEN = 4
 	};
 
-	ProcessException(ERROR_LEVEL level, ERROR_TYPE type, const char * trigger = NULL) throw();
+	ProcessException(ERROR_LEVEL level, ERROR_TYPE type, const std::string trigger = "") throw();
 	~ProcessException() throw();
 
 	virtual const char* what() const throw();
 
 	const std::string getLevel() const throw();
 	const std::string getTrigger() const throw();
-	
+	const Information getErrorInfo() const throw();
 
 private:
 	ERROR_LEVEL m_level;
+	ERROR_TYPE m_type;
 	std::string m_name;
 	std::string m_description;
-	const char* m_trigger;
-	std::map<ERROR_TYPE, Information > m_error;
+	std::string m_trigger;
 
-	/* error's names */
-	static const std::string STR_NON_EXISTENT;
-	static const std::string STR_UNEXPECTED_VALUE;
-	static const std::string STR_UNEXPECTED_MESSAGE;
-	static const std::string STR_UNDEFINED;
-
-	/* error's descriptions */
-	static const std::string DESC_NON_EXISTENT;
-	static const std::string DESC_UNEXPECTED_VALUE;
-	static const std::string DESC_UNEXPECTED_MESSAGE;
-	static const std::string DESC_UNDEFINED;
-
-	const Information getErrorInfo(ERROR_TYPE errType) const throw();
-	void setError(ERROR_TYPE errType, std::string& name, std::string& description) throw();
+	/* error's names and descriptions */
+	static const std::string ERROR_NAME[];
+	static const std::string ERROR_DESCRIPTION[];
 };
 

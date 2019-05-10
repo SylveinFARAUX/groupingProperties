@@ -25,16 +25,13 @@ namespace FileTools
 		input_fileName = (string::npos == pos) ? "" : path.substr(pos + 1, path.length() - 1);
 
 		pos = input_fileName.find_last_of(".");
-		FileManager::output_fileName = (string::npos == pos) ? "" : input_fileName.substr(0, pos) + "_output";
-		FileManager::output_fileName += input_fileName.substr(pos, input_fileName.length() - 1);
+		FileManager::m_output_fileName = (string::npos == pos) ? "" : input_fileName.substr(0, pos) + "_output." + FileManager::EXTENSION[XLSX];
 
 		book->load(StringTools::string2wchar(path));
 
 		if (!book)
-		{
-			cout << "Impossible d'ouvrir le fichier " << path << endl;
-			return nodes;
-		}
+			throw ProcessException(ProcessException::FATAL, ProcessException::FILE_OPEN, "Impossible d'ouvrir le fichier " + FileManager::m_output_fileName);
+
 
 		Sheet* sheet = book->getSheet(0);
 
@@ -62,4 +59,64 @@ namespace FileTools
 		return nodes;
 	}
 
+	void XLSXTools::write_file(list<grouping::Node>* nodes, grouping::Group* group)
+	{
+		Book* book = xlCreateXMLBook();
+		list<grouping::Node>::iterator it;
+		grouping::Group::iterator g_it;
+
+		if (!book)
+			throw ProcessException(ProcessException::FATAL, ProcessException::FILE_OPEN, "Impossible d'ouvrir le fichier " + FileManager::m_output_fileName);
+
+
+		Sheet * sheet = book->addSheet(L"Results");
+		sheet->setDisplayGridlines(true);
+
+		sheet->writeStr(1, 0, StringTools::string2wchar(FileManager::m_node_columnStr));
+		sheet->writeStr(1, 1, StringTools::string2wchar(FileManager::m_property_columnStr));
+
+		int i = 2;
+
+		//Write tree
+		for (it = nodes->begin(); it != nodes->end(); it++)
+		{
+			sheet->writeStr(i, 0, StringTools::string2wchar(it->name));
+
+			grouping::Properties::iterator p_it;
+
+			for (p_it = it->properties.begin(); p_it != it->properties.end(); p_it++)
+				if (p_it == it->properties.begin())
+					sheet->writeStr(i, 1, StringTools::string2wchar(*p_it));
+				else
+				{
+					i++;
+					sheet->writeStr(i, 1, StringTools::string2wchar(*p_it));
+				}
+			i = i + 2;
+		}
+
+		i++;
+		sheet->writeStr(i, 0, L"Groups : ");
+		i++;
+
+		//Write groups
+		for (g_it = group->begin(); g_it != group->end(); g_it++)
+		{
+			sheet->writeStr(i, 0, StringTools::string2wchar(g_it->first));
+			grouping::Properties::iterator p_it;
+
+			for (p_it = g_it->second.begin(); p_it != g_it->second.end(); p_it++)
+				if (p_it == g_it->second.begin())
+					sheet->writeStr(i, 1, StringTools::string2wchar(*p_it));
+				else
+				{
+					i++;
+					sheet->writeStr(i, 1, StringTools::string2wchar(*p_it));
+				}
+			i++;
+		}
+
+		book->save(StringTools::string2wchar(FileTools::FileManager::m_output_fileName));
+		book->release();
+	}
 }

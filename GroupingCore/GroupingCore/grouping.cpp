@@ -95,7 +95,7 @@ namespace grouping
 		bool grouped;
 
 		//data preparation
-		map<string, Properties > source = nodes2map(source_nodes);
+		map<string, Properties > source = nodes2map(&source_nodes);
 		cout << "Elaguage de l'arbre d'entrée" << endl;
 		to_prune(source, &pruned_tree, &pscore);
 
@@ -209,6 +209,17 @@ namespace grouping
 		return false;
 	}
 
+	bool GroupingTools::is_p_in_node(Properties* psource, string p)
+	{
+		Properties::iterator it;
+
+		for (it = psource->begin(); it != psource->end(); it++)
+		{
+			if (it->compare(p) == 0)
+				return true;
+		}
+		return false;
+	}
 	string GroupingTools::get_group_name(Group * g, string prop)
 	{
 		Group::iterator group_it;
@@ -242,15 +253,57 @@ namespace grouping
 		cout << gr_nb << " ont été créés, regroupant au total " << p_nb << " propriétés" << endl;
 	}
 
-	map<string, Properties > GroupingTools::nodes2map(list<Node> source)
+	map<string, Properties > GroupingTools::nodes2map(list<Node>* source)
 	{
 		list<Node>::iterator node_it;
 		map<string, Properties > result;
 
-		for (node_it = source.begin(); node_it != source.end(); node_it++)
+		for (node_it = source->begin(); node_it != source->end(); node_it++)
 			for (Properties::iterator p_it = node_it->properties.begin(); p_it != node_it->properties.end(); p_it++)
 				result[node_it->name].push_back(*p_it);
 
+		return result;
+	}
+
+	list<Node> GroupingTools::buildTreeWithGroups(list<Node> * lnodes, Group * group)
+	{
+		Group::iterator group_it;
+
+		list<Node> result;
+		list<Node>::iterator node_it;
+
+		for (node_it = lnodes->begin(); node_it != lnodes->end(); node_it++)
+		{
+			Node n(node_it->name);
+			Properties::iterator p_it;
+
+			for (p_it = node_it->properties.begin(); p_it != node_it->properties.end(); p_it++)
+			{
+				string groupName = get_group_name(group, *p_it);
+
+				if (groupName.length() <= 0)
+					n.properties.push_back(*p_it);
+				else if (!is_p_in_node(&n.properties, groupName))
+					n.properties.push_back(groupName);
+			}
+
+			result.push_back(n);
+		}
+		return result;
+	}
+
+	list<Node> GroupingTools::map2nodes(map<string, Properties >* source)
+	{
+		list<Node> result;
+		map<string, Properties >::iterator it;
+
+		for (it = source->begin(); it != source->end(); it++)
+		{
+			Properties::iterator p_it;
+			Node n(it->first);
+			for (p_it = it->second.begin(); p_it != it->second.end(); p_it++)
+				n.properties.push_back(*p_it);
+		}
 		return result;
 	}
 }
