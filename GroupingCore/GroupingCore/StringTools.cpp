@@ -58,3 +58,35 @@ string StringTools::wchar2string(const wchar_t* wide_string)
 	wstring ws(wide_string);
 	return string(ws.begin(), ws.end());
 }
+
+inline void StringTools::ltrim(string& s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+		return !std::isspace(ch);
+		}));
+}
+
+inline void StringTools::rtrim(string& s) {
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+		return !std::isspace(ch);
+		}).base(), s.end());
+}
+
+inline void StringTools::trim(string& s) {
+	ltrim(s);
+	rtrim(s);
+}
+
+bool StringTools::isValidString(string* val)
+{
+	const char* const_val = val->c_str();
+
+	for (int i = 0; i < val->length(); i++)
+	{
+		int code = int(const_val[i]);
+
+		if (!((65 <= code && code <= 90) || (97 <= code && code <= 122) || code == 95 || code == 46 || (48 <= code && code <= 57)))
+			return false;
+	}
+
+	return true;
+}

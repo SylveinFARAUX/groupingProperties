@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include <GroupingCore/JSONTools.h>
 
 #include <GroupingCore/grouping.h>
 
@@ -13,10 +12,21 @@
 #include <GroupingCore/XLSXTools.h>
 #include <GroupingCore/StringTools.h>
 
+#include <GroupingCore/Socket.h>
+
+/* JSON management */
+#include <GroupingCore/JSONTools.h>
+
+/* Exception management*/
+#include <GroupingCore/ProcessException.h>
+
 using namespace std;
 
 string file;
+string module = "[Snow Process Helper Engine]";
 FileTools::FileManager* file_manager;
+Socket* engineSock;
+JSONTools::JSONLogCommand *log_msg = new JSONTools::JSONLogCommand();
 
 void set_file(string fullpath){
 	file = fullpath;
@@ -34,55 +44,110 @@ void process_grouping(int node_column, int property_column)
 	else
 		file_manager = new FileTools::XLSXTools();
 
+	log_msg->setLog(module, "Grouping", JSONTools::LOGINFO, "Reading file");
+	engineSock->Send(log_msg->toJSON().c_str());
+
 	list<grouping::Node> lno = file_manager->read_file(file, node_column, property_column);
 
-	/*cout << "L'arbre est : " << endl;
+	
+	log_msg->setLog(module, "Grouping", JSONTools::LOGINFO, "Tree representation (entities/properties) :");
+	engineSock->Send(log_msg->toJSON().c_str());
 
 	list<grouping::Node>::iterator it;
 	for (it = lno.begin(); it != lno.end(); it++)
 	{
-		cout << "<" << it->name << ">" << endl;
+		string node = "< " + it->name + " >";
 
 		grouping::Properties::iterator p_it;
 
 		for (p_it = it->properties.begin(); p_it != it->properties.end(); p_it++)
-			cout << " -> " << *p_it << endl;
-		cout << endl;
-	}*/
+			node += "\n\t" + *p_it;
+
+		log_msg->setLog(module, "Grouping", JSONTools::LOGINFO, node);
+		engineSock->Send(log_msg->toJSON().c_str());
+	}
 
 	//process grouping
-
 	grouping::Group groups = grouping::GroupingTools::grouping(lno);
 	grouping::GroupingTools::show_groups(&groups);//*/
 	list<grouping::Node> result = grouping::GroupingTools::buildTreeWithGroups(&lno, &groups);
 
 	//save the results
+	log_msg->setLog(module, "Grouping", JSONTools::LOGINFO, "Result saving to "+FileTools::FileManager::m_output_fileName);
+	engineSock->Send(log_msg->toJSON().c_str());
 	file_manager->write_file(&result, &groups);
 }
 
 int main()
 {
-	
+	Sleep(3000);
+	Socket SnowProcessHelperUI = Socket(module.c_str(), "127.0.0.1", 40009);
+	engineSock = &SnowProcessHelperUI;
 
-	 /* CASE Process -> case grouping */
-	//set_file("C:\\Users\\sylveinfaraux\\Documents\\personnel\\workspace\\groupingProperties\\GroupingCore\\entree.xlsx");
-	set_file("C:\\Users\\sylveinfaraux\\Documents\\ServiceNow\\Training\\Catalog Item Variables.xlsx");
-	FileTools::FileManager::setColumnName("Entity", "Property");
-	process_grouping(1, 3);
+	if (!SnowProcessHelperUI.connection())
+		throw ProcessException(ProcessException::FATAL, ProcessException::CONNECTION_FAILED, "Tentative de connexion 127.0.0.1:40000");
 
-	/*string jsonmsg = "{\"hello\": \"world\", \"t\" : true, \"f\" : false, \"n\" : null, \"i\" : 123, \"pi\" : 3.1416, \"a\" : [1, 2, 3, 4]}";
-	
-	bool testBool;
-	
-	try{
-		testBool = JSONTools::getBoolValueFromJSON(jsonmsg, "i");
+	SnowProcessHelperUI.Send(JSONTools::JSONConnectionCommand(module).toJSON().c_str(), true);
+
+	string text = "";
+	bool connected = true;
+
+	while (connected)
+	{
+		
+		text = SnowProcessHelperUI.receive();
+		cout << "message is : " << text << endl;
+		if (text.compare("") == 0)
+			break;
+
+		JSONTools::MESSAGE_TYPE mt;
+
+		try {
+			mt = JSONTools::string2command(JSONTools::getStrValueFromJSON(text, "messageType")); 
+		}
+		catch (const ProcessException& e) {
+			e.what();
+		}
+
+		switch (mt)
+		{
+		case JSONTools::EXIT:
+			connected = false;
+			break;
+		case JSONTools::PROCESS:
+		{
+			JSONTools::JSONProcessAction jsonProcess(text);
+			cout << "parsing du JSON OK " << endl;
+
+			if (jsonProcess.m_action == JSONTools::GROUPING)
+			{
+				log_msg->setLog(module, "Grouping", JSONTools::LOGINFO, "Grouping process started");
+				SnowProcessHelperUI.Send(log_msg->toJSON().c_str(), true);
+				cout << "3" << endl;
+
+				string ncn = JSONTools::json2string(jsonProcess.getOption("nodeColName"));
+				string pcn = JSONTools::json2string(jsonProcess.getOption("propertyColName"));
+				int nc = JSONTools::json2int(jsonProcess.getOption("nodeColumn"));
+				int pc = JSONTools::json2int(jsonProcess.getOption("propertyColumn"));
+
+				set_file(JSONTools::getStrValueFromJSON(text, "file"));
+				FileTools::FileManager::setColumnName(ncn, pcn);
+
+				process_grouping(nc, pc);
+
+				log_msg->setLog(module, "Grouping", JSONTools::LOGINFO, "Grouping process finished");
+				SnowProcessHelperUI.Send(log_msg->toJSON().c_str());
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
+		text = "";
 	}
-	catch (const ProcessException & e){
-		e.what();
-	}
-
-	JSONTools::JSONConnectionCommand jsonConnect("WeTheBest");
-	cout << jsonConnect.toJSON() << endl;*/
+	SnowProcessHelperUI.close();
+	system("PAUSE");
 }
 
 // Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage

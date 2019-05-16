@@ -4,91 +4,55 @@
 #include <iostream>
 #include "ProcessException.h"
 #include <vector>
+#include <map>
+#include <unordered_map>
 
 /* JSON includes */
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
+
 namespace JSONTools 
 {
-	enum MESSAGE_TYPE { PROCESS_FILE, CONNECTION, LOG, UNDEFINED };
-
+	typedef std::unordered_map<std::string, const void*> Hashtable;
+	enum MESSAGE_TYPE { PROCESS, CONNECTION, LOG, EXIT, MESSAGE_UNDEFINED };
+	enum Action { GROUPING, ACTION_UNDEFINED };
 	enum LOG_LEVEL { LOGINFO = 0, LOGERROR = 1 };
 	const std::string LOG_LEVEL_STR[] = {"Information", "Error"};
 
 
-	/* Tools to build JSON messages */
+	/* Tools to understand TCP messages */
 
-	struct JSONCommand {
-		std::string m_message_type;
-		std::string m_client;
-		virtual std::string toJSON() = 0;
-	};
-
-	struct JSONConnectionCommand : JSONCommand
+	MESSAGE_TYPE string2command(std::string cmd)
 	{
-		std::string m_message = "connected";
-
-		JSONConnectionCommand(std::string client){
-			m_message_type = "connection";
-			m_client = client;
+		if (cmd.compare("process") == 0)
+			return PROCESS;
+		else if (cmd.compare("log") == 0)
+			return LOG;
+		else if (cmd.compare("connection") == 0)
+			return CONNECTION;
+		else if (cmd.compare("exit") == 0)
+			return EXIT;
+		else
+		{
+			try {
+				throw ProcessException(ProcessException::INCIDENT, ProcessException::UNEXPECTED_MESSAGE);
+			}
+			catch (ProcessException const& e) {
+				e.what();
+				return MESSAGE_UNDEFINED;
+			}
 		}
+	}
 
-		std::string toJSON() {
-			rapidjson::StringBuffer jsonMsg;
-			rapidjson::Writer<rapidjson::StringBuffer> writer(jsonMsg);
-
-			writer.StartObject();
-			writer.Key("messageType");
-			writer.String(m_message_type.c_str());
-			writer.Key("client");
-			writer.String(m_client.c_str());
-			writer.Key("message");
-			writer.String(m_message.c_str());
-			writer.EndObject();
-
-			return jsonMsg.GetString();
-		}
-	};
-
-	struct JSONLogCommand : JSONCommand
+	Action string2Action(std::string cmd)
 	{
-		std::string m_operation;
-		LOG_LEVEL m_level;
-		std::string m_log;
-		std::string m_comment;
-
-		void setLog(std::string client, std::string operation, LOG_LEVEL level, std::string log, std::string comment = ""){
-			m_message_type = "log";
-			m_client = client;
-			m_operation = operation;
-			m_level = level;
-			m_log = log;
-			m_comment = comment;
-		}
-
-		std::string toJSON() {
-			rapidjson::StringBuffer jsonMsg;
-			rapidjson::Writer<rapidjson::StringBuffer> writer(jsonMsg);
-
-			writer.StartObject();
-			writer.Key("messageType");
-			writer.String(m_message_type.c_str());
-			writer.Key("client");
-			writer.String(m_client.c_str());
-			writer.Key("operation");
-			writer.String(m_operation.c_str());
-			writer.Key("level");
-			writer.String(LOG_LEVEL_STR[m_level].c_str());
-			writer.Key("log");
-			writer.String(m_log.c_str());
-			writer.Key("comment");
-			writer.EndObject();
-
-			return jsonMsg.GetString();
-		}
-	};
+		if (cmd.compare("grouping") == 0)
+			return GROUPING;
+		else
+			return ACTION_UNDEFINED;
+	}
 
 
 	/* Tools to read JSON messages */
@@ -167,6 +131,21 @@ namespace JSONTools
 
 		return s.GetBool();
 	}
+	
+	rapidjson::GenericObject<false, rapidjson::Value> getObjectValueFromJSON(std::string msg, std::string key)
+	{
+		rapidjson::Document d;
+		d.Parse(msg.c_str());
+
+		std::string trace = "get JSON object member " + key + " from JSON object " + msg;
+
+		if (!d.HasMember(key.c_str()))
+			throw ProcessException(ProcessException::FATAL, ProcessException::NON_EXISTENT, trace.c_str());
+
+		rapidjson::Value& s = d[key.c_str()];
+
+		return s.GetObjectW();
+	}
 
 	std::vector<std::string> getArrayValueFromJSON(std::string msg, std::string key)
 	{
@@ -196,24 +175,154 @@ namespace JSONTools
 
 		return values;
 	}
-
-	MESSAGE_TYPE string2command(std::string cmd)
-	{
-		if (cmd.compare("process") == 0)
-			return PROCESS_FILE;
-		else if (cmd.compare("log") == 0)
-			return LOG;
-		else if (cmd.compare("connection") == 0)
-			return CONNECTION;
-		else
+	
+	std::string json2string(const void* val) 
+	{ 
+		if (!((rapidjson::Value*)val)->IsString())
 		{
 			try {
-				throw ProcessException(ProcessException::INCIDENT, ProcessException::UNEXPECTED_MESSAGE);
+				throw ProcessException(ProcessException::INCIDENT, ProcessException::UNEXPECTED_VALUE);
 			}
 			catch (ProcessException const& e) {
 				e.what();
-				return UNDEFINED;
+				return "";
 			}
 		}
+		return ((rapidjson::Value*)val)->GetString(); 
 	}
+
+	int json2int(const void* val) 
+	{ 
+		if (!((rapidjson::Value*)val)->IsInt())
+		{
+			try {
+				throw ProcessException(ProcessException::INCIDENT, ProcessException::UNEXPECTED_VALUE);
+			}
+			catch (ProcessException const& e) {
+				e.what();
+				return 0;
+			}
+		}
+		return ((rapidjson::Value*)val)->GetInt(); 
+	}
+
+	bool json2bool(const void* val) 
+	{ 
+		if (!((rapidjson::Value*)val)->IsBool())
+		{
+			try {
+				throw ProcessException(ProcessException::INCIDENT, ProcessException::UNEXPECTED_VALUE);
+			}
+			catch (ProcessException const& e) {
+				e.what();
+				return "";
+			}
+		}
+		return ((rapidjson::Value*)val)->GetBool(); 
+	}
+
+
+	/* Tools to build JSON messages */
+
+	struct JSONCommand {
+		std::string m_message_type;
+		std::string m_client;
+		virtual std::string toJSON() = 0;
+	};
+
+	struct JSONAction {
+		std::string m_message_type;
+		Hashtable m_option;
+	};
+
+	struct JSONConnectionCommand : JSONCommand
+	{
+
+		JSONConnectionCommand(std::string client) {
+			m_message_type = "connection";
+			m_client = client;
+		}
+
+		std::string toJSON() {
+			rapidjson::StringBuffer jsonMsg;
+			rapidjson::Writer<rapidjson::StringBuffer> writer(jsonMsg);
+
+			writer.StartObject();
+			writer.Key("messageType");
+			writer.String(m_message_type.c_str());
+			writer.Key("client");
+			writer.String(m_client.c_str());
+			writer.EndObject();
+
+			return jsonMsg.GetString();
+		}
+	};
+
+	struct JSONLogCommand : JSONCommand
+	{
+		std::string m_operation;
+		LOG_LEVEL m_level;
+		std::string m_log;
+		std::string m_comment;
+
+		void setLog(std::string client, std::string operation, LOG_LEVEL level, std::string log, std::string comment = "") {
+			m_message_type = "log";
+			m_client = client;
+			m_operation = operation;
+			m_level = level;
+			m_log = log;
+			m_comment = comment;
+		}
+
+		std::string toJSON() {
+			rapidjson::StringBuffer jsonMsg;
+			rapidjson::Writer<rapidjson::StringBuffer> writer(jsonMsg);
+
+			writer.StartObject();
+			writer.Key("messageType");
+			writer.String(m_message_type.c_str());
+			writer.Key("client");
+			writer.String(m_client.c_str());
+			writer.Key("operation");
+			writer.String(m_operation.c_str());
+			writer.Key("level");
+			writer.String(LOG_LEVEL_STR[m_level].c_str());
+			writer.Key("log");
+			writer.String(m_log.c_str());
+			writer.Key("comment");
+			writer.String(m_comment.c_str());
+			writer.EndObject();
+
+			return jsonMsg.GetString();
+		}
+	};
+
+	struct JSONProcessAction : JSONAction
+	{
+		Action m_action = ACTION_UNDEFINED;
+		std::string m_file = "";
+		std::string m_comment;
+		rapidjson::Document option_doc;
+
+		JSONProcessAction(std::string jsonMessage) {
+			m_message_type = "process";
+			std::cout << "message à parser : " << jsonMessage << std::endl;
+			try {
+				m_action = string2Action(getStrValueFromJSON(jsonMessage, "action"));
+				m_file = getStrValueFromJSON(jsonMessage, "file");
+				std::cout << "parsing des options" << std::endl;
+				option_doc.Parse(jsonMessage.c_str());
+				std::cout << "parsing des options réussi" << std::endl;
+
+				for (rapidjson::Value::ConstMemberIterator mit = option_doc["option"].MemberBegin(); mit != option_doc["option"].MemberEnd(); mit++)
+					m_option[mit->name.GetString()] = &mit->value;
+				std::cout << "ajout des options réussi" << std::endl;
+
+			}
+			catch (const ProcessException & e) {
+				e.what();
+			}
+		}
+		const void* getOption(std::string option) { return m_option[option]; }
+	};
 }

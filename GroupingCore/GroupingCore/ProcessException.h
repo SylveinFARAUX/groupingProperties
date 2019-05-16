@@ -20,7 +20,8 @@ public:
 		NON_EXISTENT = 1,
 		UNEXPECTED_VALUE = 2,
 		UNEXPECTED_MESSAGE = 3,
-		FILE_OPEN = 4
+		FILE_OPEN = 4,
+		CONNECTION_FAILED = 5
 	};
 
 	ProcessException(ERROR_LEVEL level, ERROR_TYPE type, const std::string trigger = "") throw();
@@ -38,6 +39,7 @@ private:
 	std::string m_name;
 	std::string m_description;
 	std::string m_trigger;
+	struct tm* m_time;
 
 	/* error's names and descriptions */
 	static const std::string ERROR_NAME[];

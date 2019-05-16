@@ -19,19 +19,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CommonTools.h" />
     <ClInclude Include="CSVTools.h" />
+    <ClInclude Include="ErrorLoger.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="grouping.h" />
     <ClInclude Include="JSONTools.h" />
     <ClInclude Include="ProcessException.h" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Socket.h" />
     <ClInclude Include="StringTools.h" />
     <ClInclude Include="XLSXTools.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CommonTools.cpp" />
     <ClCompile Include="CSVTools.cpp" />
+    <ClCompile Include="ErrorLoger.cpp" />
     <ClCompile Include="grouping.cpp" />
     <ClCompile Include="ProcessException.cpp" />
+    <ClCompile Include="Socket.cpp" />
     <ClCompile Include="StringTools.cpp" />
     <ClCompile Include="XLSXTools.cpp" />
   </ItemGroup>
@@ -135,7 +142,7 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;GROUPINGCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;GROUPINGCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -194,7 +201,7 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;GROUPINGCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;GROUPINGCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
