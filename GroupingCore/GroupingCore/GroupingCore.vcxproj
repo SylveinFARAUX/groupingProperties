@@ -42,6 +42,9 @@
     <ClCompile Include="StringTools.cpp" />
     <ClCompile Include="XLSXTools.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Singleton.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{8337FD4F-C403-432D-90BD-58B863734C1C}</ProjectGuid>
@@ -160,6 +163,7 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
       <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)include\lib\"
 XCOPY /Y /R "$(TargetDir)*.lib" "$(SolutionDir)include\lib\"
 XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"
+XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.inl" "$(SolutionDir)include\$(ProjectName)\"
 XCOPY /Y /R "$(SolutionDir)include\lib\*.dll" "$(SolutionDir)bin\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -221,6 +225,7 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
       <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)include\lib\"
 XCOPY /Y /R "$(TargetDir)*.lib" "$(SolutionDir)include\lib\"
 XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"
+XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.inl" "$(SolutionDir)include\$(ProjectName)\"
 XCOPY /Y /R "$(SolutionDir)include\lib\*.dll" "$(SolutionDir)bin\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

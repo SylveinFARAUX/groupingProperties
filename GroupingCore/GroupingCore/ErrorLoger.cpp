@@ -3,8 +3,8 @@
 #include "StringTools.h"
 #include <iostream>
 
-
-const char * ErrorLoger::fileName = "SnowProcess Helper.log";
+ErrorLoger* ErrorLoger::m_instance = NULL;
+const char* ErrorLoger::fileName = "SnowProcess Helper.log";
 
 bool ErrorLoger::checkDate()
 {

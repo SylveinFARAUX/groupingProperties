@@ -39,7 +39,6 @@ private:
 	std::string m_name;
 	std::string m_description;
 	std::string m_trigger;
-	struct tm* m_time;
 
 	/* error's names and descriptions */
 	static const std::string ERROR_NAME[];

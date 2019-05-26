@@ -29,7 +29,6 @@ ProcessException::ProcessException(ERROR_LEVEL level, ERROR_TYPE type, const std
 	m_description = ERROR_DESCRIPTION[type];
 	m_level = level;
 	m_trigger = trigger;
-	m_time = CommonTools::getTime();
 }
 
 ProcessException::~ProcessException(){}
@@ -43,7 +42,7 @@ const char* ProcessException::what() const throw()
 	std::cerr << strError;
 
 	//then log this error with time
-	strLogLine = (getTrigger().length() > 0) ? "(" + CommonTools::getStrTimeFromStruct(m_time) + ") " + getLevel() + " - " + m_name + " : " + m_description + " Message ignored :\n" + getTrigger() + "\n\n" : "(" + CommonTools::getStrTimeFromStruct(m_time) + ") " + getLevel() + " - " + m_name + " : " + m_description + "\n\n";
+	strLogLine = (getTrigger().length() > 0) ? "(" + CommonTools::getStrTime() + ") " + getLevel() + " - " + m_name + " : " + m_description + " Message ignored :\n" + getTrigger() + "\n\n" : "(" + CommonTools::getStrTime() + ") " + getLevel() + " - " + m_name + " : " + m_description + "\n\n";
 	ErrorLoger::GetInstance()->LogLine(strLogLine.c_str());
 
 	ErrorLoger::GetInstance()->CloseStream();

@@ -306,18 +306,14 @@ namespace JSONTools
 
 		JSONProcessAction(std::string jsonMessage) {
 			m_message_type = "process";
-			std::cout << "message à parser : " << jsonMessage << std::endl;
+
 			try {
 				m_action = string2Action(getStrValueFromJSON(jsonMessage, "action"));
 				m_file = getStrValueFromJSON(jsonMessage, "file");
-				std::cout << "parsing des options" << std::endl;
 				option_doc.Parse(jsonMessage.c_str());
-				std::cout << "parsing des options réussi" << std::endl;
 
 				for (rapidjson::Value::ConstMemberIterator mit = option_doc["option"].MemberBegin(); mit != option_doc["option"].MemberEnd(); mit++)
 					m_option[mit->name.GetString()] = &mit->value;
-				std::cout << "ajout des options réussi" << std::endl;
-
 			}
 			catch (const ProcessException & e) {
 				e.what();

@@ -1,33 +1,37 @@
-// pch.h : Il s'agit d'un fichier d'en-tête précompilé.
-// Les fichiers listés ci-dessous sont compilés une seule fois, ce qui améliore les performances de génération des futures builds.
-// Cela affecte également les performances d'IntelliSense, notamment la complétion du code et de nombreuses fonctionnalités de navigation du code.
-// Toutefois, les fichiers listés ici sont TOUS recompilés si l'un d'entre eux est mis à jour entre les builds.
-// N'ajoutez pas de fichiers fréquemment mis à jour ici, car cela annule les gains de performance.
-
 #pragma once
 
 #include "framework.h"
 
-namespace grouping
-{
+/* Communication mangement */
+#include "Socket.h"
+#include "JSONTools.h"
+
+
+
 	class GROUPINGCORE_API GroupingTools
 	{
 	public:
 		GroupingTools();
 		static void run();
-		static Group grouping(std::list<Node> source_nodes);
-		static std::list<Node> buildTreeWithGroups(std::list<Node>* lnodes, Group* group);
-		static void show_groups(Group* g);
-		static std::map<std::string, Properties > nodes2map(std::list<Node>* source);
-		static std::list<Node> map2nodes(std::map<std::string, Properties >* source);
+		static grouping::Group grouping(std::list<grouping::Node> source_nodes);
+		static std::list<grouping::Node> buildTreeWithGroups(std::list<grouping::Node>* lnodes, grouping::Group* group);
+		static void show_groups(grouping::Group* g);
+		static std::map<std::string, grouping::Properties > nodes2map(std::list<grouping::Node>* source);
+		static std::list<grouping::Node> map2nodes(std::map<std::string, grouping::Properties >* source);
+		static void connectToUI();
+		static void closeConnection();
 
 	private:
-		static void to_prune(std::map<std::string, Properties > source, std::map<std::string, Properties >* pruned_tree, std::list<std::pair<std::string, int> >* pscore);
-		static bool pair_verification(std::map<std::string, Properties >* pruned_tree, std::string p1, std::string p2);
+		static void to_prune(std::map<std::string, grouping::Properties > source, std::map<std::string, grouping::Properties >* pruned_tree, std::list<std::pair<std::string, int> >* pscore);
+		static bool pair_verification(std::map<std::string, grouping::Properties >* pruned_tree, std::string p1, std::string p2);
 
-		static bool is_p_in_node(Properties* psource, std::string p);
-		static bool is_p_grouped(Group* g, std::string p);
-		static void ask_for_grouping(Group* g, std::string p);
-		static std::string get_group_name(Group* g, std::string prop);	
+		static bool is_p_in_node(grouping::Properties* psource, std::string p);
+		static bool is_p_grouped(grouping::Group* g, std::string p);
+		static void ask_for_grouping(grouping::Group* g, std::string p);
+		static std::string get_group_name(grouping::Group* g, std::string prop);
+		static void send_log(JSONTools::JSONCommand* jsonMessage);
+		
+
+		static Socket* coreSock;
 	};
-}
+
