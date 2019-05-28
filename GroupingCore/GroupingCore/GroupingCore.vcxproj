@@ -162,9 +162,7 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
     <PostBuildEvent>
       <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)include\lib\"
 XCOPY /Y /R "$(TargetDir)*.lib" "$(SolutionDir)include\lib\"
-XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"
-XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.inl" "$(SolutionDir)include\$(ProjectName)\"
-XCOPY /Y /R "$(SolutionDir)include\lib\*.dll" "$(SolutionDir)bin\"</Command>
+XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -224,9 +222,7 @@ XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectN
     <PostBuildEvent>
       <Command>XCOPY /Y /R "$(TargetDir)*.dll" "$(SolutionDir)include\lib\"
 XCOPY /Y /R "$(TargetDir)*.lib" "$(SolutionDir)include\lib\"
-XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"
-XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.inl" "$(SolutionDir)include\$(ProjectName)\"
-XCOPY /Y /R "$(SolutionDir)include\lib\*.dll" "$(SolutionDir)bin\"</Command>
+XCOPY /Y /R "$(SolutionDir)$(ProjectName)\*.h" "$(SolutionDir)include\$(ProjectName)\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
