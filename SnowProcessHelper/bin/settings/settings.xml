@@ -1,0 +1,9 @@
+<Configuration>
+	<FirstLaunch>yes</FirstLaunch>
+	<Language></Language>
+	<LangFilePath>./setings/language.csv</LangFilePath>
+	<Window>
+		<Width>400</Width>
+		<Lenght>300</Lenght>
+	</Window>
+</Configuration>

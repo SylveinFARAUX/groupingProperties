@@ -1,0 +1,27 @@
+onglet;generic name;english;français
+presentation;pres_welcome;Welcome to Snow Process Helper;Bienvenue dans Snow Process Helper
+presentation;pres_message;Snow Process Helper is a tool for processing Excel files (CSV or XLSX), in order to facilitate their import into ServiceNow.;Snow Process Helper est un outil qui permet d'effectuer des traitements sur des fichiers Excel (CSV ou XLSX), en vue de faciliter leurs imports dans l'outil ServiceNow.
+;;;
+process choosing;pc_back;Back;Retour
+process choosing;pc_file;File to process;Fichier à traiter
+process choosing;pc_process;Process;Traitement
+process choosing;pc_grouping;Create Variables Set;Créer les Variables Set
+process choosing;pc_set;Set up the process;Paramétrer le traitement
+;;;
+process settings;ps_column_names;Choose process columns;Choisir les colonnes du traitement
+process settings;ps_entity;Entity;Entité
+process settings;ps_variable;Variable;Variable
+process settings;ps_launch;Start processing;Démarrer le traitement
+;;;
+process running;pr_new_process;Start a new process;Lancer un nouveau traitement
+;;;
+menu;menu_help;Help;Aide
+menu;menu_preference;Preferences;Préférences
+;;;
+sub_menu;menu_about;About Snow Process Helper;À propos de Snow Process Helper
+preference;pref_lang;Language;Langue
+preference;pref_port;Communication port;Port de communication
+;;;
+preference page;pp_lang;Select the language you want to use in SnowProcessHelper;Sélectionnez la langue que vous voulez utiliser dans Snow Process Helper
+preference page;pp_port;TCP port to use by default;Port TCP à utiliser par défaut
+preference page;pp_port_commentary;Select the internal communication port to Snow Process Helper. If no port is selected, the application will randomly choose an available.;Sélectionnez le port de communication interne à Snow Process Helper. Si aucun port n'est sélectionné, l'application choisiera aléatoirement un disponible.
